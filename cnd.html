@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <!-- Config -->
+    <script>
+      var esriConfig = {
+        // apiKey: "Your-Access-Token",
+        portalUrl: "https://jsapi.maps.arcgis.com/",
+      };
+    </script>
+
+    <!-- Load Calcite -->
+    <script
+      type="module"
+      src="https://js.arcgis.com/calcite-components/3.2.1/calcite.esm.js"
+    ></script>
+
+    <!-- Load the ArcGIS Maps SDK for JavaScript core API -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://js.arcgis.com/4.33/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.33/"></script>
+
+    <!-- Load map components -->
+    <script
+      type="module"
+      src="https://js.arcgis.com/4.33/map-components/"
+    ></script>
+
+    <!-- CSS Styles -->
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- There is no need to programmatically set the layers, basemap, extent or zoom 
+        All this information comes from the WebMap -->
+    <arcgis-map item-id="ff54cef4e4334ce6bf6283054f1798e3">
+      <arcgis-zoom position="top-left"></arcgis-zoom>
+      <arcgis-layer-list position="bottom-left"></arcgis-layer-list>
+      <arcgis-editor position="top-right"></arcgis-editor>
+    </arcgis-map>
+  </body>
+</html>
