@@ -49,20 +49,43 @@
 
     <!-- CSS Styles -->
     <style>
-      html,
-      body {
-        height: 100%;
-        margin: 0;
+      arcgis-map {
+        flex: 3;
+      }
+
+      arcgis-feature-table {
+        flex: 1;
       }
     </style>
   </head>
   <body>
     <!-- There is no need to programmatically set the layers, basemap, extent or zoom 
         All this information comes from the WebMap -->
-    <arcgis-map item-id="ff54cef4e4334ce6bf6283054f1798e3">
-      <arcgis-zoom position="top-left"></arcgis-zoom>
-      <arcgis-layer-list position="bottom-left"></arcgis-layer-list>
-      <arcgis-editor position="top-right"></arcgis-editor>
-    </arcgis-map>
+    <calcite-shell>
+      <arcgis-map item-id="ff54cef4e4334ce6bf6283054f1798e3">
+        <arcgis-zoom position="top-left"></arcgis-zoom>
+        <arcgis-layer-list position="bottom-left"></arcgis-layer-list>
+        <arcgis-editor position="top-right"></arcgis-editor>
+      </arcgis-map>
+      <arcgis-feature-table></arcgis-feature-table>
+    </calcite-shell>
+
+    <script type="module">
+      // Get a reference to the arcgis-map component
+      const viewElement = document.querySelector("arcgis-map");
+
+      // Wait for the view to be ready before accessing the map
+      await viewElement.viewOnReady();
+
+      // Access the map's layers to find the Trails feature layer
+      const trailsFeatureLayer = viewElement.view.map.layers.find(
+        (layer) => layer.title === "Trails"
+      );
+
+      // Do something with the trailsFeatureLayer like
+      // set it as the layer on the Feature Table component
+      const featureTable = document.querySelector("arcgis-feature-table");
+      featureTable.layer = trailsFeatureLayer;
+    </script>
   </body>
 </html>
