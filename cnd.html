@@ -3,29 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-
-    <!-- Config -->
-    <script>
-      var esriConfig = {
-        // apiKey: "YOUR_ACCESS_TOKEN",
-        // apiKeys: {
-        //   scopes: [
-        //     {
-        //       // The API key value.
-        //       token: "YOUR_ACCESS_TOKEN",
-        //       // An array of URLs that the API key applies to.
-        //       urls: [
-        //         "https://basemaps.arcgis.com",
-        //         "https://services3.arcgis.com",
-        //       ],
-        //     },
-        //     // More scopes can be added here...
-        //   ],
-        // },
-        portalUrl: "https://jsapi.maps.arcgis.com/",
-      };
-    </script>
+    <title>Trail Notes</title>
 
     <!-- Load Calcite -->
     <script
@@ -86,6 +64,7 @@
       // set it as the layer on the Feature Table component
       const featureTable = document.querySelector("arcgis-feature-table");
       featureTable.layer = trailsFeatureLayer;
+      featureTable.view = viewElement.view;
     </script>
   </body>
 </html>
