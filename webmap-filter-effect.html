@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <!-- Load Calcite -->
+    <script
+      type="module"
+      src="https://js.arcgis.com/calcite-components/3.2.1/calcite.esm.js"
+    ></script>
+
+    <!-- Load the ArcGIS Maps SDK for JavaScript core API -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://js.arcgis.com/4.33/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.33/"></script>
+
+    <!-- Load map components -->
+    <script
+      type="module"
+      src="https://js.arcgis.com/4.33/map-components/"
+    ></script>
+  </head>
+  <body>
+    <calcite-shell content-behind>
+      <calcite-shell-panel slot="panel-end" display-mode="float">
+        <calcite-panel
+          heading="Maps SDK for JavaScript"
+          description="Client Side Filtering & Effects"
+        >
+          <calcite-block
+            collapsible
+            open
+            heading="Layer filter & effects"
+            description="Select a fuel type to filter the data in the map"
+          >
+            <calcite-icon scale="s" slot="icon" icon="effects"></calcite-icon>
+            <calcite-chip-group
+              id="fuel-type-select"
+              label="filter"
+              selection-mode="single"
+            >
+              <calcite-chip value="Oil" label="Oil">Oil</calcite-chip>
+              <calcite-chip value="Hydro" label="Hydro">Hydro</calcite-chip>
+              <calcite-chip value="Wind" label="Wind">Wind</calcite-chip>
+              <calcite-chip value="Gas" label="Gas">Gas</calcite-chip>
+              <calcite-chip value="Coal" label="Coal">Coal</calcite-chip>
+              <calcite-chip value="Solar" label="Solar">Solar</calcite-chip>
+              <calcite-chip value="Biomass" label="Biomass"
+                >Biomass</calcite-chip
+              >
+              <calcite-chip value="Waste" label="Waste">Waste</calcite-chip>
+              <calcite-chip value="Nuclear" label="Nuclear"
+                >Nuclear</calcite-chip
+              >
+              <calcite-chip value="Geothermal" label="Geothermal"
+                >Geothermal</calcite-chip
+              >
+            </calcite-chip-group>
+          </calcite-block>
+        </calcite-panel>
+      </calcite-shell-panel>
+
+      <arcgis-map item-id="a994d8178fc74cf4874c3fb6b1e03a00">
+        <arcgis-expand position="bottom-left">
+          <arcgis-legend></arcgis-legend>
+        </arcgis-expand>
+      </arcgis-map>
+    </calcite-shell>
+
+    <script type="module">
+      const arcgisMap = document.querySelector("arcgis-map");
+      const fuelTypeSelect = document.querySelector("#fuel-type-select");
+
+      await arcgisMap.viewOnReady();
+      const powerPlantLayer = arcgisMap.map.layers.find(
+        (layer) => layer.title === "Global power plants"
+      );
+      // get the layerview for the power plant layer
+      const layerView = await arcgisMap.whenLayerView(powerPlantLayer);
+
+      fuelTypeSelect.addEventListener(
+        "calciteChipGroupSelect",
+        handleFilterChange
+      );
+
+      function handleFilterChange() {
+        // get the selected fuel type
+        const selectedFuelType = fuelTypeSelect.selectedItems[0];
+        if (selectedFuelType?.value) {
+          // apply the feature effect to the selected fuel type
+          layerView.featureEffect = {
+            filter: {
+              where: `primary_fuel = '${selectedFuelType.value}'`,
+            },
+            excludedEffect: "opacity(30%)",
+            includedEffect: "drop-shadow(1px, 1px, 1px)",
+          };
+        } else {
+          // otherwise remove the effect
+          layerView.featureEffect = null;
+        }
+      }
+    </script>
+  </body>
+</html>
