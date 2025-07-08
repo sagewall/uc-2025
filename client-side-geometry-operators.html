@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <!-- Load Calcite -->
+    <script
+      type="module"
+      src="https://js.arcgis.com/calcite-components/3.2.1/calcite.esm.js"
+    ></script>
+
+    <!-- Load the ArcGIS Maps SDK for JavaScript core API -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://js.arcgis.com/4.33/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.33/"></script>
+
+    <!-- Load map components -->
+    <script
+      type="module"
+      src="https://js.arcgis.com/4.33/map-components/"
+    ></script>
+
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      .true {
+        --calcite-color-foreground-1: var(--calcite-color-status-success);
+      }
+    </style>
+  </head>
+  <body>
+    <arcgis-map center="-118.805, 34.027" zoom="13">
+      <arcgis-zoom position="top-left"></arcgis-zoom>
+
+      <arcgis-sketch
+        creation-mode="continuous"
+        hide-create-tools-point
+        hide-duplicate-button
+        hide-selection-tools-lasso-selection
+        hide-selection-tools-rectangle-selection
+        hide-settings-menu
+        layout="horizontal"
+        position="top-left"
+      >
+      </arcgis-sketch>
+
+      <arcgis-placement position="bottom-right">
+        <calcite-list id="list" selection-mode="none">
+          <calcite-list-item-group heading="Spatial relationships">
+            <calcite-list-item id="contains" label="Contains">
+            </calcite-list-item>
+            <calcite-list-item id="crosses" label="Crosses">
+            </calcite-list-item>
+            <calcite-list-item id="disjoint" label="Disjoint">
+            </calcite-list-item>
+            <calcite-list-item id="equals" label="Equals"> </calcite-list-item>
+            <calcite-list-item id="intersects" label="Intersects">
+            </calcite-list-item>
+            <calcite-list-item id="overlaps" label="Overlaps">
+            </calcite-list-item>
+            <calcite-list-item id="touches" label="Touches">
+            </calcite-list-item>
+            <calcite-list-item id="within" label="Within"> </calcite-list-item>
+          </calcite-list-item-group>
+        </calcite-list>
+      </arcgis-placement>
+    </arcgis-map>
+
+    <script type="module">
+      const [
+        Graphic,
+        Map,
+        containsOperator,
+        crossesOperator,
+        disjointOperator,
+        equalsOperator,
+        intersectsOperator,
+        overlapsOperator,
+        touchesOperator,
+        withinOperator,
+        GraphicsLayer,
+      ] = await $arcgis.import([
+        "@arcgis/core/Graphic.js",
+        "@arcgis/core/Map.js",
+        "@arcgis/core/geometry/operators/containsOperator.js",
+        "@arcgis/core/geometry/operators/crossesOperator.js",
+        "@arcgis/core/geometry/operators/disjointOperator.js",
+        "@arcgis/core/geometry/operators/equalsOperator.js",
+        "@arcgis/core/geometry/operators/intersectsOperator.js",
+        "@arcgis/core/geometry/operators/overlapsOperator.js",
+        "@arcgis/core/geometry/operators/touchesOperator.js",
+        "@arcgis/core/geometry/operators/withinOperator.js",
+        "@arcgis/core/layers/GraphicsLayer.js",
+      ]);
+
+      const viewElement = document.querySelector("arcgis-map");
+      const arcgisSketch = document.querySelector("arcgis-sketch");
+      const list = document.querySelector("#list");
+
+      const graphicsLayer = new GraphicsLayer();
+      viewElement.map = new Map({
+        basemap: "topo-vector",
+        layers: [graphicsLayer],
+      });
+
+      const polyline = {
+        type: "polyline",
+        paths: [
+          [-13227000.704542402, 4032506.197638312],
+          [-13223540.698857695, 4034443.92109266],
+          [-13222135.94452635, 4032506.197638312],
+          [-13221470.479577951, 4033494.9524006792],
+          [-13221470.404932415, 4033494.9524006792],
+        ],
+        spatialReference: {
+          wkid: 102100,
+        },
+      };
+      const simpleLineSymbol = {
+        type: "simple-line",
+        width: 2,
+      };
+      const polylineGraphic = new Graphic({
+        geometry: polyline,
+        symbol: simpleLineSymbol,
+      });
+      graphicsLayer.add(polylineGraphic);
+
+      // Create a polygon geometry
+      const polygon = {
+        type: "polygon",
+        rings: [
+          [-13228098.704542402, 4035365.9427463487],
+          [-13226362.225451587, 4035365.9427463487],
+          [-13226362.225451587, 4032059.2948176656],
+          [-13228098.704542402, 4032059.2948176656],
+          [-13228098.704542402, 4035365.9427463487],
+        ],
+        spatialReference: {
+          wkid: 102100,
+        },
+      };
+      const simpleFillSymbol = {
+        type: "simple-fill",
+      };
+      const polygonGraphic = new Graphic({
+        geometry: polygon,
+        symbol: simpleFillSymbol,
+      });
+      graphicsLayer.add(polygonGraphic);
+
+      arcgisSketch.snappingOptions = {
+        enabled: true,
+        featureSources: [
+          {
+            layer: graphicsLayer,
+          },
+        ],
+      };
+      arcgisSketch.layer = graphicsLayer;
+
+      function showSpatialRelationship(string, value) {
+        const listItem = list.querySelector(`#${string}`);
+        if (value) {
+          listItem.classList.add("true");
+        } else {
+          listItem.classList.remove("true");
+        }
+      }
+
+      function onGraphicUpdate() {
+        if (graphicsLayer.graphics.length < 2) {
+          list.querySelectorAll("calcite-list-item").forEach((listItem) => {
+            listItem.classList.remove("true");
+          });
+          return;
+        }
+
+        const geometry1 = graphicsLayer.graphics.getItemAt(0).geometry;
+        const geometry2 = graphicsLayer.graphics.getItemAt(1).geometry;
+
+        const contains = containsOperator.execute(geometry1, geometry2);
+        showSpatialRelationship("contains", contains);
+
+        const crosses = crossesOperator.execute(geometry1, geometry2);
+        showSpatialRelationship("crosses", crosses);
+
+        const disjoint = disjointOperator.execute(geometry1, geometry2);
+        showSpatialRelationship("disjoint", disjoint);
+
+        const equals = equalsOperator.execute(geometry1, geometry2);
+        showSpatialRelationship("equals", equals);
+
+        const intersects = intersectsOperator.execute(geometry1, geometry2);
+        showSpatialRelationship("intersects", intersects);
+
+        const overlaps = overlapsOperator.execute(geometry1, geometry2);
+        showSpatialRelationship("overlaps", overlaps);
+
+        const touches = touchesOperator.execute(geometry1, geometry2);
+        showSpatialRelationship("touches", touches);
+
+        const within = withinOperator.execute(geometry1, geometry2);
+        showSpatialRelationship("within", within);
+      }
+
+      ["arcgisUpdate", "arcgisUndo", "arcgisRedo"].forEach((eventName) => {
+        arcgisSketch.addEventListener(eventName, () => {
+          onGraphicUpdate();
+        });
+      });
+
+      arcgisSketch.addEventListener("arcgisCreate", async (event) => {
+        if (event.detail.state === "start") {
+          graphicsLayer.graphics = [graphicsLayer.graphics.shift()];
+        }
+        if (event.detail.state === "complete") {
+          onGraphicUpdate();
+        }
+      });
+
+      arcgisSketch.addEventListener("arcgisReady", () => {
+        arcgisSketch.triggerUpdate(polylineGraphic).then(onGraphicUpdate);
+      });
+    </script>
+  </body>
+</html>
