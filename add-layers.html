@@ -38,6 +38,11 @@
     <arcgis-map center="-118.43281, 37.49901" zoom="6">
       <arcgis-zoom position="top-left"></arcgis-zoom>
       <arcgis-legend position="bottom-left"></arcgis-legend>
+      <arcgis-layer-list
+        position="bottom-right"
+        show-collapse-button
+        show-heading
+      ></arcgis-layer-list>
     </arcgis-map>
     <script type="module">
       // Import necessary modules from the ArcGIS Maps SDK
@@ -50,22 +55,24 @@
       // Get a reference to the arcgis-map component
       const viewElement = document.querySelector("arcgis-map");
 
-      // Create a new FeatureLayer
+      // Create a new FeatureLayer from a URL
       const featureLayer = new FeatureLayer({
         url: "https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Global_power_plants/FeatureServer/0",
       });
 
-      // const featureLayer = new FeatureLayer({
-      //   portalItem: {
-      //     id: "332e9421a25644c5a6fb31375b2a86dc",
-      //   },
-      //   visible: true,
-      // });
+      // Create a layer from a portal item
+      const layerFromPortalItem = await Layer.fromPortalItem({
+        portalItem: {
+          id: "332e9421a25644c5a6fb31375b2a86dc",
+        },
+      });
+      layerFromPortalItem.visible = true;
+      layerFromPortalItem.title = "Global Power Plants (Styled)";
 
       // Assign a new Map instance to the Map component
       viewElement.map = new Map({
         basemap: "topo-vector", // Set the basemap
-        layers: [featureLayer], // Add the feature layer to the map
+        layers: [featureLayer, layerFromPortalItem], // Add the layers to the map
       });
     </script>
   </body>
