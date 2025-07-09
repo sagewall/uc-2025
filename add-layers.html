@@ -41,9 +41,10 @@
     </arcgis-map>
     <script type="module">
       // Import necessary modules from the ArcGIS Maps SDK
-      const [Map, FeatureLayer] = await $arcgis.import([
-        "@arcgis/core/Map",
-        "@arcgis/core/layers/FeatureLayer",
+      const [Map, FeatureLayer, Layer] = await $arcgis.import([
+        "@arcgis/core/Map.js",
+        "@arcgis/core/layers/FeatureLayer.js",
+        "@arcgis/core/layers/Layer.js",
       ]);
 
       // Get a reference to the arcgis-map component
