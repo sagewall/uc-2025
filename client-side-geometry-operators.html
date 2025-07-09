@@ -43,7 +43,6 @@
 
       <arcgis-sketch
         creation-mode="continuous"
-        default-graphics-layer-disabled
         hide-create-tools-point
         hide-duplicate-button
         hide-selection-tools-lasso-selection
@@ -88,7 +87,6 @@
         overlapsOperator,
         touchesOperator,
         withinOperator,
-        GraphicsLayer,
       ] = await $arcgis.import([
         "@arcgis/core/Graphic.js",
         "@arcgis/core/Map.js",
@@ -100,17 +98,16 @@
         "@arcgis/core/geometry/operators/overlapsOperator.js",
         "@arcgis/core/geometry/operators/touchesOperator.js",
         "@arcgis/core/geometry/operators/withinOperator.js",
-        "@arcgis/core/layers/GraphicsLayer.js",
       ]);
 
       const viewElement = document.querySelector("arcgis-map");
       const arcgisSketch = document.querySelector("arcgis-sketch");
       const list = document.querySelector("#list");
 
-      const graphicsLayer = new GraphicsLayer();
+      await arcgisSketch.componentOnReady();
+
       viewElement.map = new Map({
         basemap: "topo-vector",
-        layers: [graphicsLayer],
       });
 
       const polyline = {
@@ -134,7 +131,7 @@
         geometry: polyline,
         symbol: simpleLineSymbol,
       });
-      graphicsLayer.add(polylineGraphic);
+      arcgisSketch.layer.add(polylineGraphic);
 
       // Create a polygon geometry
       const polygon = {
@@ -157,17 +154,18 @@
         geometry: polygon,
         symbol: simpleFillSymbol,
       });
-      graphicsLayer.add(polygonGraphic);
+      arcgisSketch.layer.add(polygonGraphic);
 
       arcgisSketch.snappingOptions = {
         enabled: true,
         featureSources: [
           {
-            layer: graphicsLayer,
+            layer: arcgisSketch.layer,
           },
         ],
       };
-      arcgisSketch.layer = graphicsLayer;
+
+      arcgisSketch.triggerUpdate(polylineGraphic).then(onGraphicUpdate);
 
       function showSpatialRelationship(string, value) {
         const listItem = list.querySelector(`#${string}`);
@@ -179,15 +177,15 @@
       }
 
       function onGraphicUpdate() {
-        if (graphicsLayer.graphics.length < 2) {
+        if (arcgisSketch.layer.graphics.length < 2) {
           list.querySelectorAll("calcite-list-item").forEach((listItem) => {
             listItem.classList.remove("true");
           });
           return;
         }
 
-        const geometry1 = graphicsLayer.graphics.getItemAt(0).geometry;
-        const geometry2 = graphicsLayer.graphics.getItemAt(1).geometry;
+        const geometry1 = arcgisSketch.layer.graphics.getItemAt(0).geometry;
+        const geometry2 = arcgisSketch.layer.graphics.getItemAt(1).geometry;
 
         const contains = containsOperator.execute(geometry1, geometry2);
         showSpatialRelationship("contains", contains);
@@ -222,15 +220,11 @@
 
       arcgisSketch.addEventListener("arcgisCreate", async (event) => {
         if (event.detail.state === "start") {
-          graphicsLayer.graphics = [graphicsLayer.graphics.shift()];
+          arcgisSketch.layer.graphics = [arcgisSketch.layer.graphics.shift()];
         }
         if (event.detail.state === "complete") {
           onGraphicUpdate();
         }
-      });
-
-      arcgisSketch.addEventListener("arcgisReady", () => {
-        arcgisSketch.triggerUpdate(polylineGraphic).then(onGraphicUpdate);
       });
     </script>
   </body>
