@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scene</title>
+
+    <!-- Load Calcite -->
+    <script
+      type="module"
+      src="https://js.arcgis.com/calcite-components/3.2.1/calcite.esm.js"
+    ></script>
+
+    <!-- Load the ArcGIS Maps SDK for JavaScript core API -->
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://js.arcgis.com/4.33/esri/themes/light/main.css"
+    />
+    <script src="https://js.arcgis.com/4.33/"></script>
+
+    <!-- Load map components -->
+    <script
+      type="module"
+      src="https://js.arcgis.com/4.33/map-components/"
+    ></script>
+  </head>
+  <body>
+    <calcite-shell>
+      <arcgis-map item-id="ff54cef4e4334ce6bf6283054f1798e3">
+        <arcgis-zoom position="top-left"></arcgis-zoom>
+        <arcgis-layer-list position="bottom-left"></arcgis-layer-list>
+      </arcgis-map>
+    </calcite-shell>
+  </body>
+</html>
